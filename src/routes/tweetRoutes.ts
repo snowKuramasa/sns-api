@@ -1,48 +1,53 @@
 import type { Request, Response } from 'express'
 import { Router } from 'express'
-import User, { IUser } from '../models/User'
+import Tweet, { ITweet } from '../models/tweet'
 
 const router: Router = Router()
 
-// ユーザー一覧を取得
+//  ツイート一覧を取得
 router.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const users = await User.find()
-    res.status(200).json(users)
+    const tweets = await Tweet.find()
+    res.status(200).json(tweets)
   } catch (error) {
     res.status(500).json({ message: 'サーバーエラー', error })
   }
 })
 
-// 新しいユーザーを作成
+// 新しいツイートを作成
 router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, email, password } = req.body
-    if (!name || !email || !password) {
+    const { content, createrNickName, createrName, createrEmail } = req.body
+    if (!content || !createrNickName || !createrName || !createrEmail) {
       res.status(400).json({ message: '全てのフィールドを入力してください' })
       return
     }
 
-    const newUser: IUser = new User({ name, email, password })
-    await newUser.save()
-    res.status(201).json(newUser)
+    const newTweet: ITweet = new Tweet({
+      content,
+      createrNickName,
+      createrName,
+      createrEmail,
+    })
+    await newTweet.save()
+    res.status(201).json(newTweet)
   } catch (error) {
     res.status(500).json({ message: 'サーバーエラー', error })
   }
 })
 
-// 特定のユーザーを削除
+// 特定のツイートを削除
 router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params
-    const user = await User.findByIdAndDelete(id)
+    const tweet = await Tweet.findByIdAndDelete(id)
 
-    if (!user) {
-      res.status(404).json({ message: 'ユーザーが見つかりません' })
+    if (!Tweet) {
+      res.status(404).json({ message: 'ツイートが見つかりません' })
       return
     }
 
-    res.status(200).json({ message: 'ユーザーが削除されました' })
+    res.status(200).json({ message: 'ツイートが削除されました' })
   } catch (error) {
     res.status(500).json({ message: 'サーバーエラー', error })
   }

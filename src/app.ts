@@ -1,7 +1,9 @@
 import express from 'express'
 import type { Express } from 'express'
-import userRoutes from './routes/userRoutes'
+import tweetRoutes from './routes/tweetRoutes'
 import helloRoutes from './routes/helloRoutes'
+import authRoutes from './routes/authRoutes'
+import bodyParser from 'body-parser'
 import cors from 'cors'
 
 const app: Express = express()
@@ -29,15 +31,22 @@ const corsOptions = {
 }
 
 // CORSミドルウェアの設定
-app.use(cors(corsOptions)) // アプリ全体に適用
+// app.use(cors(corsOptions)) // アプリ全体に適用
+
+// // ミドルウェア
+// app.use(express.json()) // JSONパース
 
 // ミドルウェア
-app.use(express.json()) // JSONパース
+app.use(cors())
+app.use(bodyParser.json())
 
 //接続確認用
 app.use('/', helloRoutes)
 
+// 認証ルート
+app.use('/api/auth', authRoutes)
+
 // ルート
-app.use('/api/users', userRoutes)
+app.use('/api/tweets', tweetRoutes)
 
 export default app
